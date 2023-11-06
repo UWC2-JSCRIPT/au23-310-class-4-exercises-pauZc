@@ -58,4 +58,16 @@ const cards = [
  *
  * @param {array} deck A deck of cards
  */
-const logCardDeck = deck => {};
+/**
+ logCardDeck
+4. Given a complete deck of cards, loop through and log every property of every card to the console 
+(deck provided in the exercises repo).
+ */
+const logCardDeck = deck => {
+  cards.forEach(card => {
+    console.log (`_________________________(${card.val})\n
+                  ${card.suit}     ${card.displayVal} \n \n`)
+  });
+};
+
+logCardDeck();
