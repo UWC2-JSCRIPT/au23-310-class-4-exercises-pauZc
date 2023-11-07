@@ -21,7 +21,17 @@ const cards = [
  * @param {array} cards
  * @return {string} displayVal
  */
-const cardsWorthTen = cards => {};
+/*
+*   Create a function cardsWorthTen that uses the array functions above (no regular loops allowed, no array forEach allowed)
+*   Will accept an array of cards in the format below. 
+* Will return a comma separated string of the displayVals of only those cards worth exactly 10.
+*/
+
+const cardsWorthTen = cards => {
+  const cardsFilter = cards.filter(card => card.val === 10)
+  const cardLabels = cardsFilter.map(card => card.displayVal)
+  return cardLabels.join(', ')
+};
 
 console.log(cardsWorthTen(cards));
 // should return/log "10, Jack, Queen, King"
