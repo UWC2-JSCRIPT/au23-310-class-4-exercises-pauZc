@@ -1,15 +1,25 @@
-// const blackjackDeck = getDeck();
+
+const blackjackDeck = getDeck();
 
 // /**
 //  * Represents a card player (including dealer).
 //  * @constructor
 //  * @param {string} name - The name of the player
 //  */
-// class CardPlayer {}; //TODO
+class CardPlayer {
+    constructor (playerName){
+        this.name =playerName
+        this.hand = new Array()
+    }
+    drawCard(){
+        const newCard = blackjackDeck[Math.floor(Math.random() * 52)]
+       this.hand.push(newCard)
+    }
+}; //TODO
 
 // // CREATE TWO NEW CardPlayers
-// const dealer; // TODO
-// const player; // TODO
+const dealer = new CardPlayer('Angel') // TODO
+const player = new CardPlayer('Luis') // TODO
 
 // /**
 //  * Calculates the score of a Blackjack hand
@@ -18,10 +28,54 @@
 //  * @returns {number} blackJackScore.total
 //  * @returns {boolean} blackJackScore.isSoft
 //  */
-// const calcPoints = (hand) => {
-//   // CREATE FUNCTION HERE
+const calcPoints = (hand) => {
+    let handScore ={
+        score: 0,
+        sofhand: false
+    }
+    const aces = hand.filter(card => card.displayVal === 'Ace')
+    for (let index = 0; index < hand.length; index++) {
+        const card = hand[index];
+        if(aces.length > 0 && card.displayVal === 'Ace')
+            continue;
+        handScore.score += card.val
+    }
+    if ( aces.length === 1 ){
+        if( handScore.score <= 10 ){
+            handScore.score += 11
+            handScore.sofhand = true
+        }else if( handScore.score > 10 ){
+             //false if the hand has no Aces, or if all Aces are counting as 1 point
+            handScore.score += 1
+            handScore.sofhand = false
+        }
+        return handScore
+    }
 
-// }
+    if ( aces.length > 1 & handScore.score > 9 ){
+        for (let index = 0; index < aces.length; index++) {
+            handScore.score ++;
+            //false if the hand has no Aces, or if all Aces are counting as 1 point
+            handScore.sofhand = false
+        }
+        return handScore
+    }
+
+    if ( aces.length > 1 && handScore.score <= 9 ){
+        for (let index = 0; index < aces.length; index++) {
+            if(index === 0)
+                handScore.score += 11;
+            else
+                handScore.score ++;
+        }
+        if(handScore.score <= 21)
+            handScore.sofhand = true
+        return handScore
+    }
+
+    return handScore
+    
+}
 
 // /**
 //  * Determines whether the dealer should draw another card.
@@ -29,10 +83,22 @@
 //  * @param {Array} dealerHand Array of card objects with val, displayVal, suit properties
 //  * @returns {boolean} whether dealer should draw another card
 //  */
-// const dealerShouldDraw = (dealerHand) => {
+const dealerShouldDraw = (dealerHand) => {
 //   // CREATE FUNCTION HERE
+    const dealerScore = calcPoints(dealerHand)
+//The dealer must abide by a strict set of rules:
+//If the dealer's hand is 16 points or less, the dealer must draw another card
+    if( dealerScore <= 16 )
+        return true;
+//If the dealer's hand is exactly 17 points, and the dealer has an Ace valued at 11, the dealer must draw another card
+    if( dealerScore === 17  && dealerScore.softHand )
+            return true;
+//Otherwise if the dealer's hand is 17 points or more, the dealer will end her turn
+    if(dealerScore >= 17 )
+        return false
 
-// }
+
+}
 
 // /**
 //  * Determines the winner if both player and dealer stand
@@ -40,61 +106,67 @@
 //  * @param {number} dealerScore 
 //  * @returns {string} Shows the player's score, the dealer's score, and who wins
 //  */
-// const determineWinner = (playerScore, dealerScore) => {
-//   // CREATE FUNCTION HERE
+const determineWinner = (playerScore, dealerScore) => {
+   // CREATE FUNCTION HERE
+   let winner;
+    if((playerScore > dealerScore && playerScore <= 21) || dealerScore > 21)
+        winner = 'player'
+    else
+        if((dealerScore > playerScore && dealerScore <= 21) || playerScore > 21)
+            winner = 'dealer'
 
-// }
+
+    console.log(`The winner is ${winner}
+                Player - score: ${playerScore} \n
+                 Dealer - score: ${dealerScore}`)
+    
+ }
 
 // /**
 //  * Creates user prompt to ask if they'd like to draw a card
 //  * @param {number} count 
 //  * @param {string} dealerCard 
 //  */
-// const getMessage = (count, dealerCard) => {
-//   return `Dealer showing ${dealerCard.displayVal}, your count is ${count}.  Draw card?`
-// }
+const getMessage = (count, dealerCard) => {
+   return `Dealer showing ${dealerCard.displayVal}, your count is ${count}.  Draw card?`
+ }
 
 // /**
 //  * Logs the player's hand to the console
 //  * @param {CardPlayer} player 
 //  */
-// const showHand = (player) => {
-//   const displayHand = player.hand.map((card) => card.displayVal);
-//   console.log(`${player.name}'s hand is ${displayHand.join(', ')} (${calcPoints(player.hand).total})`);
-// }
+const showHand = (player) => {
+  const displayHand = player.hand.map((card) => card.displayVal);
+  console.log(`${player.name}'s hand is ${displayHand.join(', ')} (${calcPoints(player.hand).score})`);
+}
 
 // /**
 //  * Runs Blackjack Game
 //  */
-// const startGame = function() {
-//   player.drawCard();
-//   dealer.drawCard();
-//   player.drawCard();
-//   dealer.drawCard();
+const startGame = function() {
+   player.drawCard();
+   dealer.drawCard();
+  player.drawCard();
+  dealer.drawCard();
 
-//   let playerScore = calcPoints(player.hand).total;
-//   showHand(player);
-//   while (playerScore < 21 && confirm(getMessage(playerScore, dealer.hand[0]))) {
-//     player.drawCard();
-//     playerScore = calcPoints(player.hand).total;
-//     showHand(player);
-//   }
-//   if (playerScore > 21) {
-//     return 'You went over 21 - you lose!';
-//   }
-//   console.log(`Player stands at ${playerScore}`);
+  let playerScore = calcPoints(player.hand).score;
+  showHand(player);
+  while (playerScore < 21 && confirm(getMessage(playerScore, dealer.hand[0]))) {
+    player.drawCard();
+    playerScore = calcPoints(player.hand).score;
+    showHand(player);
+  }
+  console.log(`Player stands at ${playerScore}`);
 
-//   let dealerScore = calcPoints(dealer.hand).total;
-//   while (dealerScore < 21 && dealerShouldDraw(dealer.hand)) {
-//     dealer.drawCard();
-//     dealerScore = calcPoints(dealer.hand).total;
-//     showHand(dealer);
-//   }
-//   if (dealerScore > 21) {
-//     return 'Dealer went over 21 - you win!';
-//   }
-//   console.log(`Dealer stands at ${dealerScore}`);
+  let dealerScore = calcPoints(dealer.hand).score;
+  while (dealerScore < 21 && dealerShouldDraw(dealer.hand)) {
+    dealer.drawCard();
+    dealerScore = calcPoints(dealer.hand).score;
+    showHand(dealer);
+  }
 
-//   return determineWinner(playerScore, dealerScore);
-// }
-// // console.log(startGame());
+  console.log(`Dealer stands at ${dealerScore}`);
+
+  return determineWinner(playerScore, dealerScore);
+}
+startGame()
